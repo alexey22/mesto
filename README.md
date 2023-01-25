@@ -9,3 +9,7 @@
 3. Elements
 4. Popup
 5. Footer
+
+### GitHub Pages
+
+https://alexey22.github.io/mesto/
