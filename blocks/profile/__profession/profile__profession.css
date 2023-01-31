@@ -5,6 +5,10 @@
   font-weight: 400;
   margin-top: 16px;
   margin-bottom: 0;
+  max-width: 480px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media screen and (max-width: 900px) {
@@ -13,5 +17,16 @@
     line-height: 16.94px;
     margin-top: 14px;
     text-align: center;
+    max-width: calc(100vw - 48px - 48px - 40px);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .profile__profession {
+    font-size: 14px;
+    line-height: 16.94px;
+    margin-top: 14px;
+    text-align: center;
+    max-width: calc(100vw - 19px - 19px - 40px);
   }
 }

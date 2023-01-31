@@ -15,6 +15,6 @@
     line-height: 21.78px;
     margin-top: 25px;
     margin-bottom: 75px;
-    width: calc(100% - 22px - 22px);
+    max-width: 410px;
   }
 }

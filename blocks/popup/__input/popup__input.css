@@ -3,8 +3,11 @@
   padding: 0;
   box-sizing: border-box;
   border: 0;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   height: 27px;
+  font-size: 14px;
+  line-height: 16.94px;
+  font-weight: 400;
 }
 
 .popup__input:not(:nth-of-type(1)) {

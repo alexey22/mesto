@@ -2,10 +2,12 @@
   position: absolute;
   height: 32px;
   width: 32px;
-  background-image: url(../../../images/Close\ Icon.png);
+  background-image: url(../../../images/close-icon.svg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
   right: -40px;
   top: -40px;
 }
