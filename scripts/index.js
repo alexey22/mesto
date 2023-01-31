@@ -2,26 +2,36 @@ const profileEditButton = document.querySelector(".profile__edit-button");
 
 const popup = document.querySelector(".popup");
 const profileNameElement = document.querySelector(".profile__name");
-const popupInputName = document.querySelector(".popup__input_name");
+const formProfileInfoInputName = document.querySelector(
+  ".form-profile-info__input_el_name"
+);
 const profileProfessionElement = document.querySelector(".profile__profession");
-const popupInputProfession = document.querySelector(".popup__input_profession");
+const formProfileInfoInputProfession = document.querySelector(
+  ".form-profile-info__input_el_profession"
+);
 
 profileEditButton.addEventListener("click", function () {
   popup.classList.add("popup_opened");
-  popupInputName.value = profileNameElement.textContent;
-  popupInputProfession.value = profileProfessionElement.textContent;
+  formProfileInfoInputName.value = profileNameElement.textContent;
+  formProfileInfoInputProfession.value = profileProfessionElement.textContent;
 });
+
+function closePopup() {
+  popup.classList.remove("popup_opened");
+}
 
 const popupClose = document.querySelector(".popup__close");
 popupClose.addEventListener("click", function (e) {
   e.preventDefault();
-  popup.classList.remove("popup_opened");
+  closePopup();
 });
 
-const popupSubmitButton = document.querySelector(".popup__submit-button");
+const popupSubmitButton = document.querySelector(
+  ".form-profile-info__submit-button"
+);
 popupSubmitButton.addEventListener("click", function (e) {
   e.preventDefault();
-  profileProfessionElement.textContent = popupInputProfession.value;
-  profileNameElement.textContent = popupInputName.value;
-  popup.classList.remove("popup_opened");
+  profileNameElement.textContent = formProfileInfoInputName.value;
+  profileProfessionElement.textContent = formProfileInfoInputProfession.value;
+  closePopup();
 });

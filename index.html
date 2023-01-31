@@ -93,15 +93,18 @@
         </article>
       </section>
       <section class="popup">
-        <div class="popup__content">
-          <form class="popup__container" name="profile-info">
-            <h2 class="popup__title">Редактировать профиль</h2>
-            <input class="popup__input popup__input_type_name" type="text" />
+        <div class="popup__container">
+          <form class="form-profile-info" name="profile-info">
+            <h2 class="form-profile-info__title">Редактировать профиль</h2>
             <input
-              class="popup__input popup__input_type_profession"
+              class="form-profile-info__input form-profile-info__input_el_name"
               type="text"
             />
-            <button class="popup__submit-button" type="submit">
+            <input
+              class="form-profile-info__input form-profile-info__input_el_profession"
+              type="text"
+            />
+            <button class="form-profile-info__submit-button" type="submit">
               Сохранить
             </button>
           </form>
