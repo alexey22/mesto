@@ -23,10 +23,6 @@
 
 @media screen and (max-width: 600px) {
   .profile__profession {
-    font-size: 14px;
-    line-height: 16.94px;
-    margin-top: 14px;
-    text-align: center;
     max-width: calc(100vw - 19px - 19px - 40px);
   }
 }

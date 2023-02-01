@@ -26,10 +26,8 @@ popupClose.addEventListener("click", function (e) {
   closePopup();
 });
 
-const popupSubmitButton = document.querySelector(
-  ".form-profile-info__submit-button"
-);
-popupSubmitButton.addEventListener("click", function (e) {
+const formProfileInfo = document.querySelector(".form-profile-info");
+formProfileInfo.addEventListener("submit", function (e) {
   e.preventDefault();
   profileNameElement.textContent = formProfileInfoInputName.value;
   profileProfessionElement.textContent = formProfileInfoInputProfession.value;
