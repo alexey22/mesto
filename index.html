@@ -40,7 +40,8 @@
           </article>
         </template>
       </section>
-      <section class="popup">
+
+      <section class="popup popup_type_profile-info">
         <div class="popup__container">
           <form class="form-profile-info" name="profile-info">
             <h2 class="form-profile-info__title">Редактировать профиль</h2>
@@ -56,8 +57,36 @@
               Сохранить
             </button>
           </form>
+
           <button type="button" class="popup__close"></button>
         </div>
+      </section>
+
+      <section class="popup popup_type_add-card">
+        <div class="popup__container">
+          <form class="form-add-card" name="add-card">
+            <h2 class="form-add-card__title">Новое место</h2>
+            <input
+              class="form-add-card__input form-add-card__input_el_title"
+              type="text"
+              placeholder="Название"
+            />
+            <input
+              class="form-add-card__input form-add-card__input_el_img"
+              type="text"
+              placeholder="Ссылка на картинку"
+            />
+            <button class="form-add-card__submit-button" type="submit">
+              Сохранить
+            </button>
+          </form>
+
+          <button type="button" class="popup__close"></button>
+        </div>
+      </section>
+
+      <section class="popup popup_type_show-image">
+        <div class="popup__container"></div>
       </section>
     </main>
 

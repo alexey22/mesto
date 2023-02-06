@@ -38,5 +38,10 @@
 @import url(../blocks/form-profile-info/__input/form-profile-info__input.css);
 @import url(../blocks/form-profile-info/__submit-button/form-profile-info__submit-button.css);
 
+@import url(../blocks/form-add-card/form-add-card.css);
+@import url(../blocks/form-add-card/__title/form-add-card__title.css);
+@import url(../blocks/form-add-card/__input/form-add-card__input.css);
+@import url(../blocks/form-add-card/__submit-button/form-add-card__submit-button.css);
+
 @import url(../blocks/footer/footer.css);
 @import url(../blocks/footer/__copyright/footer__copyright.css);
