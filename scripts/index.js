@@ -25,6 +25,18 @@ const initialCards = [
   },
 ];
 
+/////////////////////////////////////////////
+// popup Open and Close
+
+function openPopup(popup) {
+  popup.classList.add("popup_opened");
+}
+
+function closePopup(popup) {
+  popup.classList.remove("popup_opened");
+}
+
+/////////////////////////////////////////////
 // make card from template
 function makeCard(name, link) {
   const card = document.getElementById("card-template").content.cloneNode(true);
@@ -43,6 +55,22 @@ function makeCard(name, link) {
     event.target.classList.toggle("card__like_liked");
   });
 
+  //add events for image popup
+  card.querySelector(".card__image").addEventListener("click", (event) => {
+    const popupImage = document.querySelector(".popup_type_show-image");
+    const imageElem = popupImage.querySelector(".popup__image");
+    imageElem.src = link;
+    imageElem.alt = name;
+    const subtitle = popupImage.querySelector(".popup__subtitle");
+    subtitle.textContent = name;
+    openPopup(popupImage);
+
+    const popupCloseButton = popupImage.querySelector(".popup__close");
+    popupCloseButton.addEventListener("click", () => {
+      closePopup(popupImage);
+    });
+  });
+
   return card;
 }
 
@@ -53,17 +81,6 @@ const cardsContainer = document.querySelector(".elements");
 cardsContainer.append(
   ...initialCards.map((card) => makeCard(card.name, card.link))
 );
-
-/////////////////////////////////////////////
-// popup Open and Close
-
-function openPopup(popup) {
-  popup.classList.add("popup_opened");
-}
-
-function closePopup(popup) {
-  popup.classList.remove("popup_opened");
-}
 
 ////////////////////////////////////////////////
 //Form for edit profile info
