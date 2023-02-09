@@ -36,11 +36,23 @@ function closePopup(popup) {
   popup.classList.remove("popup_opened");
 }
 
+////////////////////////////////////////////
+// setting popup for images
+
+const popupImage = document.querySelector(".popup_type_show-image");
+const imageElem = popupImage.querySelector(".popup__image");
+const subtitle = popupImage.querySelector(".popup__subtitle");
+const popupCloseButton = popupImage.querySelector(".popup__close");
+popupCloseButton.addEventListener("click", () => {
+  closePopup(popupImage);
+});
+
 /////////////////////////////////////////////
 // make card from template
-function makeCard(name, link) {
-  const card = document.getElementById("card-template").content.cloneNode(true);
 
+const cardTemplateContent = document.querySelector("#card-template").content;
+function makeCard(name, link) {
+  const card = cardTemplateContent.cloneNode(true);
   card.querySelector(".card__image").src = link;
   card.querySelector(".card__image").alt = name;
   card.querySelector(".card__title").textContent = name;
@@ -57,18 +69,10 @@ function makeCard(name, link) {
 
   //add events for image popup
   card.querySelector(".card__image").addEventListener("click", (event) => {
-    const popupImage = document.querySelector(".popup_type_show-image");
-    const imageElem = popupImage.querySelector(".popup__image");
     imageElem.src = link;
     imageElem.alt = name;
-    const subtitle = popupImage.querySelector(".popup__subtitle");
     subtitle.textContent = name;
     openPopup(popupImage);
-
-    const popupCloseButton = popupImage.querySelector(".popup__close");
-    popupCloseButton.addEventListener("click", () => {
-      closePopup(popupImage);
-    });
   });
 
   return card;
