@@ -28,12 +28,40 @@ const initialCards = [
 /////////////////////////////////////////////
 // popup Open and Close
 
-function openPopup(popup) {
-  popup.classList.add("popup_opened");
+function handleEsc(evt) {
+  evt.preventDefault();
+  if (evt.key === "Escape") {
+    const activePopup = document.querySelector(".popup_opened");
+    closePopup(activePopup);
+  }
 }
 
 function closePopup(popup) {
   popup.classList.remove("popup_opened");
+
+  document.removeEventListener("keypress", handleEsc);
+  popup.removeEventListener("click", closePopupOnOverlayClick);
+
+  // скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
+  Array.from(popup.querySelectorAll(".popup__error_visible")).forEach(
+    (errorElem) => errorElem.classList.remove("popup__error_visible")
+  );
+  Array.from(popup.querySelectorAll(".popup__input_type_error")).forEach(
+    (errorElem) => errorElem.classList.remove("popup__input_type_error")
+  );
+}
+
+const closePopupOnOverlayClick = (evt) => {
+  if (evt.currentTarget === evt.target) {
+    const activePopup = document.querySelector(".popup_opened");
+    closePopup(activePopup);
+  }
+};
+
+function openPopup(popup) {
+  popup.classList.add("popup_opened");
+  document.addEventListener("keyup", handleEsc);
+  popup.addEventListener("click", closePopupOnOverlayClick);
 }
 
 ////////////////////////////////////////////
@@ -103,10 +131,21 @@ const formProfileInfoInputProfession = popupProfileInfo.querySelector(
   ".form-profile-info__input_el_profession"
 );
 
+const popupAddCard = document.querySelector(".popup_type_add-card");
+
+const formProfileInfo = popupProfileInfo.querySelector(".form-profile-info");
+const formAddCard = popupAddCard.querySelector(".form-add-card");
+
 profileEditButton.addEventListener("click", function () {
   openPopup(popupProfileInfo);
   formProfileInfoInputName.value = profileNameElement.textContent;
   formProfileInfoInputProfession.value = profileProfessionElement.textContent;
+  // генерируем событие input на первом текстовом поле, чтобы форма свалидировалась после открытия, так как
+  // изменение textContent не вызывает этого события и форма считает что текстовые поля пустые
+  // хотя они заполнены
+  formProfileInfo
+    .querySelector(".popup__input")
+    .dispatchEvent(new Event("input"));
 });
 
 const popupProfileInfoCloseButton =
@@ -115,7 +154,6 @@ popupProfileInfoCloseButton.addEventListener("click", function () {
   closePopup(popupProfileInfo);
 });
 
-const formProfileInfo = popupProfileInfo.querySelector(".form-profile-info");
 formProfileInfo.addEventListener("submit", function (e) {
   e.preventDefault();
   profileNameElement.textContent = formProfileInfoInputName.value;
@@ -126,8 +164,6 @@ formProfileInfo.addEventListener("submit", function (e) {
 ////////////////////////////////////////////////
 //Form for add cards
 const cardAddButton = document.querySelector(".profile__add-button");
-
-const popupAddCard = document.querySelector(".popup_type_add-card");
 
 const formAddCardInputTitle = popupAddCard.querySelector(
   ".form-add-card__input_el_title"
@@ -142,10 +178,10 @@ cardAddButton.addEventListener("click", function () {
 
 const popupAddCardCloseButton = popupAddCard.querySelector(".popup__close");
 popupAddCardCloseButton.addEventListener("click", function () {
+  formAddCard.reset();
   closePopup(popupAddCard);
 });
 
-const formAddCard = popupAddCard.querySelector(".form-add-card");
 formAddCard.addEventListener("submit", function (e) {
   e.preventDefault();
   cardsContainer.prepend(
@@ -153,4 +189,18 @@ formAddCard.addEventListener("submit", function (e) {
   );
   formAddCard.reset();
   closePopup(popupAddCard);
+});
+
+// index.js - индексный файл, "точка входа" в JS
+// validate.js - своего рода "библиотека", которая подключается перед index.js
+// и применятся в нем. поэтому функции из validate.js вызываются(используются)
+// в "основной программе" index.js
+
+enableValidation({
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
 });

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mesto</title>
+    <script defer src="./scripts/validate.js"></script>
     <script defer src="./scripts/index.js"></script>
     <link rel="stylesheet" href="./pages/index.css" />
   </head>
@@ -43,17 +44,34 @@
 
       <section class="popup popup_type_profile-info">
         <div class="popup__container">
-          <form class="form-profile-info" name="profile-info">
+          <form
+            class="popup__form form-profile-info"
+            name="profile-info"
+            novalidate
+          >
             <h2 class="form-profile-info__title">Редактировать профиль</h2>
             <input
-              class="form-profile-info__input form-profile-info__input_el_name"
+              class="popup__input form-profile-info__input form-profile-info__input_el_name"
+              id="name"
               type="text"
+              minlength="2"
+              maxlength="40"
+              required
             />
+            <p class="popup__error name-error"></p>
             <input
-              class="form-profile-info__input form-profile-info__input_el_profession"
+              class="popup__input form-profile-info__input form-profile-info__input_el_profession"
+              id="profession"
               type="text"
+              minlength="2"
+              maxlength="200"
+              required
             />
-            <button class="form-profile-info__submit-button" type="submit">
+            <p class="popup__error profession-error"></p>
+            <button
+              class="popup__button form-profile-info__submit-button"
+              type="submit"
+            >
               Сохранить
             </button>
           </form>
@@ -64,19 +82,30 @@
 
       <section class="popup popup_type_add-card">
         <div class="popup__container">
-          <form class="form-add-card" name="add-card">
+          <form class="popup__form form-add-card" name="add-card" novalidate>
             <h2 class="form-add-card__title">Новое место</h2>
             <input
-              class="form-add-card__input form-add-card__input_el_title"
+              class="popup__input form-add-card__input form-add-card__input_el_title"
+              id="title"
               type="text"
               placeholder="Название"
+              minlength="2"
+              maxlength="30"
+              required
             />
+            <p class="popup__error title-error"></p>
             <input
-              class="form-add-card__input form-add-card__input_el_img"
-              type="text"
+              class="popup__input form-add-card__input form-add-card__input_el_img"
+              id="img"
+              type="url"
               placeholder="Ссылка на картинку"
+              required
             />
-            <button class="form-add-card__submit-button" type="submit">
+            <p class="popup__error img-error"></p>
+            <button
+              class="popup__button form-add-card__submit-button"
+              type="submit"
+            >
               Сохранить
             </button>
           </form>
