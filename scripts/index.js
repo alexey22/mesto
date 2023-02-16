@@ -36,6 +36,16 @@ function handleEsc(evt) {
   }
 }
 
+// скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
+function hideErrors(popup) {
+  Array.from(popup.querySelectorAll(".popup__error_visible")).forEach(
+    (errorElem) => errorElem.classList.remove("popup__error_visible")
+  );
+  Array.from(popup.querySelectorAll(".popup__input_type_error")).forEach(
+    (errorElem) => errorElem.classList.remove("popup__input_type_error")
+  );
+}
+
 function closePopup(popup) {
   popup.classList.remove("popup_opened");
 
@@ -43,12 +53,11 @@ function closePopup(popup) {
   popup.removeEventListener("click", closePopupOnOverlayClick);
 
   // скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
-  Array.from(popup.querySelectorAll(".popup__error_visible")).forEach(
-    (errorElem) => errorElem.classList.remove("popup__error_visible")
-  );
-  Array.from(popup.querySelectorAll(".popup__input_type_error")).forEach(
-    (errorElem) => errorElem.classList.remove("popup__input_type_error")
-  );
+  if (
+    popup.classList.contains("popup_type_add-card") ||
+    popup.classList.contains("popup_type_profile-info")
+  )
+    hideErrors(popup);
 }
 
 const closePopupOnOverlayClick = (evt) => {
@@ -188,6 +197,12 @@ formAddCard.addEventListener("submit", function (e) {
     makeCard(formAddCardInputTitle.value, formAddCardInputImg.value)
   );
   formAddCard.reset();
+  // через готовую, имеющуюся функцию делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
+  toggleButtonState(
+    [formAddCardInputTitle, formAddCardInputImg],
+    formAddCard.querySelector(".popup__button"),
+    "popup__button_disabled"
+  );
   closePopup(popupAddCard);
 });
 
