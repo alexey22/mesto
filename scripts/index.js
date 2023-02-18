@@ -28,14 +28,6 @@ const initialCards = [
 /////////////////////////////////////////////
 // popup Open and Close
 
-function handleEsc(evt) {
-  evt.preventDefault();
-  if (evt.key === "Escape") {
-    const activePopup = document.querySelector(".popup_opened");
-    closePopup(activePopup);
-  }
-}
-
 // скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
 function hideErrors(popup) {
   Array.from(popup.querySelectorAll(".popup__error_visible")).forEach(
@@ -46,23 +38,32 @@ function hideErrors(popup) {
   );
 }
 
+function handleEsc(evt) {
+  evt.preventDefault();
+  if (evt.key === "Escape") {
+    const activePopup = document.querySelector(".popup_opened");
+    if (activePopup.querySelector(".popup__form")) {
+      activePopup.querySelector(".popup__form").reset();
+    }
+    hideErrors(activePopup);
+    closePopup(activePopup);
+  }
+}
+
 function closePopup(popup) {
   popup.classList.remove("popup_opened");
 
   document.removeEventListener("keypress", handleEsc);
   popup.removeEventListener("click", closePopupOnOverlayClick);
-
-  // скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
-  if (
-    popup.classList.contains("popup_type_add-card") ||
-    popup.classList.contains("popup_type_profile-info")
-  )
-    hideErrors(popup);
 }
 
 const closePopupOnOverlayClick = (evt) => {
   if (evt.currentTarget === evt.target) {
     const activePopup = document.querySelector(".popup_opened");
+    if (activePopup.querySelector(".popup__form")) {
+      activePopup.querySelector(".popup__form").reset();
+    }
+    hideErrors(activePopup);
     closePopup(activePopup);
   }
 };
@@ -188,6 +189,7 @@ cardAddButton.addEventListener("click", function () {
 const popupAddCardCloseButton = popupAddCard.querySelector(".popup__close");
 popupAddCardCloseButton.addEventListener("click", function () {
   formAddCard.reset();
+  hideErrors(formAddCard);
   closePopup(popupAddCard);
 });
 
@@ -203,6 +205,7 @@ formAddCard.addEventListener("submit", function (e) {
     formAddCard.querySelector(".popup__button"),
     "popup__button_disabled"
   );
+  hideErrors(popupAddCard);
   closePopup(popupAddCard);
 });
 
