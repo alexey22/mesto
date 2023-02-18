@@ -44,28 +44,28 @@ function handleEsc(evt) {
     const activePopup = document.querySelector(".popup_opened");
     if (activePopup.querySelector(".popup__form")) {
       activePopup.querySelector(".popup__form").reset();
+      hideErrors(activePopup);
     }
-    hideErrors(activePopup);
     closePopup(activePopup);
   }
 }
 
-function closePopup(popup) {
-  popup.classList.remove("popup_opened");
-
-  document.removeEventListener("keypress", handleEsc);
-  popup.removeEventListener("click", closePopupOnOverlayClick);
-}
-
-const closePopupOnOverlayClick = (evt) => {
+function closePopupOnOverlayClick(evt) {
   if (evt.currentTarget === evt.target) {
     const activePopup = document.querySelector(".popup_opened");
     if (activePopup.querySelector(".popup__form")) {
       activePopup.querySelector(".popup__form").reset();
+      hideErrors(activePopup);
     }
-    hideErrors(activePopup);
     closePopup(activePopup);
   }
+}
+
+closePopup = (popup) => {
+  popup.classList.remove("popup_opened");
+
+  document.removeEventListener("keyup", handleEsc);
+  popup.removeEventListener("click", closePopupOnOverlayClick);
 };
 
 function openPopup(popup) {
