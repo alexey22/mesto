@@ -49,6 +49,8 @@ class FormValidator {
   }
 
   // переключаем состояние кнопки в зависимости от валидности всех input-ов её формы
+  // этот метод так же публичный, так как нужно поменять состояние кнопки отправки формы добавления карточки
+  // после успешного создания новой карточки
   toggleButtonState(inputList, buttonElem) {
     if (this._hasInvalidInput(inputList)) {
       buttonElem.classList.add(this._inactiveButtonClass);
