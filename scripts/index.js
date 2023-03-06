@@ -1,3 +1,6 @@
+import Card from "./Card.js";
+import FormValidator from "./FormValidator.js";
+
 const initialCards = [
   {
     name: "Архыз",
@@ -61,7 +64,7 @@ function closePopupOnOverlayClick(evt) {
   }
 }
 
-closePopup = (popup) => {
+const closePopup = (popup) => {
   popup.classList.remove("popup_opened");
 
   document.removeEventListener("keyup", handleEsc);
@@ -78,51 +81,22 @@ function openPopup(popup) {
 // setting popup for images
 
 const popupImage = document.querySelector(".popup_type_show-image");
-const imageElem = popupImage.querySelector(".popup__image");
-const subtitle = popupImage.querySelector(".popup__subtitle");
+
 const popupCloseButton = popupImage.querySelector(".popup__close");
 popupCloseButton.addEventListener("click", () => {
   closePopup(popupImage);
 });
 
-/////////////////////////////////////////////
-// make card from template
-
-const cardTemplateContent = document.querySelector("#card-template").content;
-function makeCard(name, link) {
-  const card = cardTemplateContent.cloneNode(true);
-  card.querySelector(".card__image").src = link;
-  card.querySelector(".card__image").alt = name;
-  card.querySelector(".card__title").textContent = name;
-
-  //add event for card delete
-  card.querySelector(".card__delete").addEventListener("click", (event) => {
-    event.target.closest(".card").remove();
-  });
-
-  //add event for card like
-  card.querySelector(".card__like").addEventListener("click", (event) => {
-    event.target.classList.toggle("card__like_liked");
-  });
-
-  //add events for image popup
-  card.querySelector(".card__image").addEventListener("click", (event) => {
-    imageElem.src = link;
-    imageElem.alt = name;
-    subtitle.textContent = name;
-    openPopup(popupImage);
-  });
-
-  return card;
-}
-
-// where card are stored in in HTML
-const cardsContainer = document.querySelector(".elements");
-
-// add cards from initial array to cards's container
-cardsContainer.append(
-  ...initialCards.map((card) => makeCard(card.name, card.link))
-);
+initialCards.forEach((elem) => {
+  const card = new Card(
+    elem.name,
+    elem.link,
+    "#card-template",
+    popupImage,
+    openPopup
+  );
+  card.render(".elements");
+});
 
 ////////////////////////////////////////////////
 //Form for edit profile info
@@ -195,30 +169,44 @@ popupAddCardCloseButton.addEventListener("click", function () {
 
 formAddCard.addEventListener("submit", function (e) {
   e.preventDefault();
-  cardsContainer.prepend(
-    makeCard(formAddCardInputTitle.value, formAddCardInputImg.value)
+  const card = new Card(
+    formAddCardInputTitle.value,
+    formAddCardInputImg.value,
+    "#card-template",
+    popupImage,
+    openPopup
   );
+  card.render(".elements");
   formAddCard.reset();
-  // через готовую, имеющуюся функцию делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
-  toggleButtonState(
+  // через готовый, имеющуйся метод валидатора формы делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
+  cardAddFormValidator.toggleButtonState(
     [formAddCardInputTitle, formAddCardInputImg],
-    formAddCard.querySelector(".popup__button"),
-    "popup__button_disabled"
+    formAddCard.querySelector(".popup__button")
   );
   hideErrors(popupAddCard);
   closePopup(popupAddCard);
 });
 
-// index.js - индексный файл, "точка входа" в JS
-// validate.js - своего рода "библиотека", которая подключается перед index.js
-// и применятся в нем. поэтому функции из validate.js вызываются(используются)
-// в "основной программе" index.js
+const profileFormValidator = new FormValidator(
+  {
+    inputSelector: ".popup__input",
+    submitButtonSelector: ".popup__button",
+    inactiveButtonClass: "popup__button_disabled",
+    inputErrorClass: "popup__input_type_error",
+    errorClass: "popup__error_visible",
+  },
+  document.querySelector(".form-profile-info")
+);
+profileFormValidator.enableValidation();
 
-enableValidation({
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
-});
+const cardAddFormValidator = new FormValidator(
+  {
+    inputSelector: ".popup__input",
+    submitButtonSelector: ".popup__button",
+    inactiveButtonClass: "popup__button_disabled",
+    inputErrorClass: "popup__input_type_error",
+    errorClass: "popup__error_visible",
+  },
+  document.querySelector(".form-add-card")
+);
+cardAddFormValidator.enableValidation();
