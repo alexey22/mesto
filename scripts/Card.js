@@ -1,27 +1,39 @@
 class Card {
-  constructor(name, link, templateSelector, popupImage, openPopup) {
+  /**
+   * @param {string} name
+   * @param {string} link
+   * @param {string} templateSelector
+   * @param {function} openPopupCallback
+   */
+  constructor(name, link, templateSelector, openPopupCallback) {
     this._name = name;
     this._link = link;
     this._templateSelector = templateSelector;
-    this._popupImage = popupImage;
-    this._openPopup = openPopup;
+    this._openPopupCallback = openPopupCallback;
   }
 
-  _makeCard() {
+  /**
+   * Создает и возврашает HTMLElement карточки
+   * @returns HTMLElement
+   */
+  makeCard() {
     this._element = document
       .querySelector(this._templateSelector)
       .content.children[0].cloneNode(true);
 
-    this._element.querySelector(".card__image").src = this._link;
-    this._element.querySelector(".card__image").alt = this._name;
+    this._imageElement = this._element.querySelector(".card__image");
+    this._imageElement.src = this._link;
+    this._imageElement.alt = this._name;
     this._element.querySelector(".card__title").textContent = this._name;
+    this._like = this._element.querySelector(".card__like");
+
+    this._deleteCardHandler = this._deleteCardHandler.bind(this);
+    this._likeCardHandler = this._likeCardHandler.bind(this);
+    this._openImagePopupHandler = this._openImagePopupHandler.bind(this);
 
     this._addEventListeners();
-  }
 
-  render(renderToSelector) {
-    this._makeCard();
-    document.querySelector(renderToSelector).prepend(this._element);
+    return this._element;
   }
 
   _deleteCardHandler() {
@@ -30,34 +42,29 @@ class Card {
     delete this;
   }
 
-  _likeCardHandler(event) {
-    event.target.classList.toggle("card__like_liked");
+  _likeCardHandler() {
+    this._like.classList.toggle("card__like_liked");
   }
 
   _openImagePopupHandler() {
-    const imageElem = this._popupImage.querySelector(".popup__image");
-    const subtitle = this._popupImage.querySelector(".popup__subtitle");
-    imageElem.src = this._link;
-    imageElem.alt = this._name;
-    subtitle.textContent = this._name;
-    this._openPopup(this._popupImage);
+    this._openPopupCallback(this._link, this._name);
   }
 
   _addEventListeners() {
     //add event for card delete
     this._element
       .querySelector(".card__delete")
-      .addEventListener("click", this._deleteCardHandler.bind(this));
+      .addEventListener("click", this._deleteCardHandler);
 
     //add event for card like
     this._element
       .querySelector(".card__like")
-      .addEventListener("click", this._likeCardHandler.bind(this));
+      .addEventListener("click", this._likeCardHandler);
 
-    //add event for image popup
+    //add event for image popups
     this._element
       .querySelector(".card__image")
-      .addEventListener("click", this._openImagePopupHandler.bind(this));
+      .addEventListener("click", this._openImagePopupHandler);
   }
 
   _removeEventListeners() {

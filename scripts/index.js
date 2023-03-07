@@ -1,104 +1,97 @@
 import Card from "./Card.js";
 import FormValidator from "./FormValidator.js";
 
-const initialCards = [
-  {
-    name: "Архыз",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg",
-  },
-  {
-    name: "Челябинская область",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/chelyabinsk-oblast.jpg",
-  },
-  {
-    name: "Иваново",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/ivanovo.jpg",
-  },
-  {
-    name: "Камчатка",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg",
-  },
-  {
-    name: "Холмогорский район",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kholmogorsky-rayon.jpg",
-  },
-  {
-    name: "Байкал",
-    link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
-  },
-];
+import initialCards from "./initialCards.js";
 
-/////////////////////////////////////////////
-// popup Open and Close
-
-// скрываем ошибки валидации при закрытии (подчеркивание красным input-a и вывод сообщения с описанием ошибки)
-function hideErrors(popup) {
-  Array.from(popup.querySelectorAll(".popup__error_visible")).forEach(
-    (errorElem) => errorElem.classList.remove("popup__error_visible")
-  );
-  Array.from(popup.querySelectorAll(".popup__input_type_error")).forEach(
-    (errorElem) => errorElem.classList.remove("popup__input_type_error")
-  );
+/**
+ * Скрывает ошибки валидации форм ( Убирает подчеркивание красным input-a и вывод сообщения с описанием ошибки),
+ * а так же сбрасывает значения текстовых полей формы до пустого состояния:
+ * 1) формы добавления новой карточки
+ * 2) формы редактирования профиля
+ */
+function hideErrorsAndReset() {
+  cardAddFormValidator.hideErrorsAndReset();
+  profileFormValidator.hideErrorsAndReset();
 }
 
+/**
+ * Обработчик события
+ * при нажатии Esc на document
+ * Находит активный popup и закрывает его
+ * @param {Event} evt - событие, на котором сработал слушатель, запускающий данный обработчик
+ */
 function handleEsc(evt) {
   evt.preventDefault();
   if (evt.key === "Escape") {
     const activePopup = document.querySelector(".popup_opened");
-    if (activePopup.querySelector(".popup__form")) {
-      activePopup.querySelector(".popup__form").reset();
-      hideErrors(activePopup);
-    }
     closePopup(activePopup);
   }
 }
 
+/**
+ * Обработчик события
+ * при клике на Overlay popup-a
+ * Находит активный попап и закрывает его
+ * @param {Event} evt
+ */
 function closePopupOnOverlayClick(evt) {
   if (evt.currentTarget === evt.target) {
     const activePopup = document.querySelector(".popup_opened");
-    if (activePopup.querySelector(".popup__form")) {
-      activePopup.querySelector(".popup__form").reset();
-      hideErrors(activePopup);
-    }
     closePopup(activePopup);
   }
 }
 
+/**
+ * Закрывает popup
+ * @param {HTMLElement} popup
+ */
 const closePopup = (popup) => {
   popup.classList.remove("popup_opened");
-
+  hideErrorsAndReset();
   document.removeEventListener("keyup", handleEsc);
   popup.removeEventListener("click", closePopupOnOverlayClick);
 };
 
+/**
+ * Отрывает popup
+ * @param {HTMLElement} popup
+ */
 function openPopup(popup) {
   popup.classList.add("popup_opened");
   document.addEventListener("keyup", handleEsc);
   popup.addEventListener("click", closePopupOnOverlayClick);
 }
 
-////////////////////////////////////////////
-// setting popup for images
-
+// HTMLElement of popup with image
 const popupImage = document.querySelector(".popup_type_show-image");
-
 const popupCloseButton = popupImage.querySelector(".popup__close");
 popupCloseButton.addEventListener("click", () => {
   closePopup(popupImage);
 });
 
+const popupImageFotoElement = popupImage.querySelector(".popup__image");
+const popupImageSubtitleElement = popupImage.querySelector(".popup__subtitle");
+
+/**
+ * Создает кароточку Card и размещает ее в верстке страницы
+ * @param {string} name
+ * @param {string} link
+ */
+function createAndRenderCard(name, link) {
+  // 4ым аргументом передаем callback, который знает про openPopup и popupImage, так что класс Card теперь не должен знать о них
+  // класс Card сообщит колбэку imgLink - адрес своего изображение и title - свой заголовок
+  const card = new Card(name, link, "#card-template", (imgLink, title) => {
+    popupImageFotoElement.src = imgLink;
+    popupImageFotoElement.alt = title;
+    popupImageSubtitleElement.textContent = title;
+    openPopup(popupImage);
+  });
+  document.querySelector(".elements").prepend(card.makeCard());
+}
+
+// Создает первоначальные карточки
 initialCards.forEach((elem) => {
-  const card = new Card(
-    elem.name,
-    elem.link,
-    "#card-template",
-    // передаем так же в конструктор данные об элементе попапа с изображением и функцию открытия попапа - так как в карточке должен быть обработчик события клика по фотографиии,
-    // которые отркрывает изображение данной карточки в попапе - объект карточки должен знать о существовании попапа и методе открытия попапа через прокидывание данных в конструктор
-    // карточки
-    popupImage,
-    openPopup
-  );
-  card.render(".elements");
+  createAndRenderCard(elem.name, elem.link);
 });
 
 ////////////////////////////////////////////////
@@ -166,50 +159,37 @@ cardAddButton.addEventListener("click", function () {
 const popupAddCardCloseButton = popupAddCard.querySelector(".popup__close");
 popupAddCardCloseButton.addEventListener("click", function () {
   formAddCard.reset();
-  hideErrors(formAddCard);
+
   closePopup(popupAddCard);
 });
 
 formAddCard.addEventListener("submit", function (e) {
   e.preventDefault();
-  const card = new Card(
-    formAddCardInputTitle.value,
-    formAddCardInputImg.value,
-    "#card-template",
-    popupImage,
-    openPopup
-  );
-  card.render(".elements");
+
+  createAndRenderCard(formAddCardInputTitle.value, formAddCardInputImg.value);
+
   formAddCard.reset();
   // через готовый, имеющуйся метод валидатора формы делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
-  cardAddFormValidator.toggleButtonState(
-    [formAddCardInputTitle, formAddCardInputImg],
-    formAddCard.querySelector(".popup__button")
-  );
-  hideErrors(popupAddCard);
+  cardAddFormValidator.toggleButtonState();
   closePopup(popupAddCard);
 });
 
+const formValidatorConfig = {
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
+
 const profileFormValidator = new FormValidator(
-  {
-    inputSelector: ".popup__input",
-    submitButtonSelector: ".popup__button",
-    inactiveButtonClass: "popup__button_disabled",
-    inputErrorClass: "popup__input_type_error",
-    errorClass: "popup__error_visible",
-  },
+  formValidatorConfig,
   document.querySelector(".form-profile-info")
 );
 profileFormValidator.enableValidation();
 
 const cardAddFormValidator = new FormValidator(
-  {
-    inputSelector: ".popup__input",
-    submitButtonSelector: ".popup__button",
-    inactiveButtonClass: "popup__button_disabled",
-    inputErrorClass: "popup__input_type_error",
-    errorClass: "popup__error_visible",
-  },
+  formValidatorConfig,
   document.querySelector(".form-add-card")
 );
 cardAddFormValidator.enableValidation();

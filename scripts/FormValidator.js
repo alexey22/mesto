@@ -15,8 +15,40 @@ class FormValidator {
     this._inputErrorClass = inputErrorClass;
     this._errorClass = errorClass;
     this._formElem = formElem;
+
+    // находим все input-ы формы
+    this._inputList = Array.from(
+      this._formElem.querySelectorAll(this._inputSelector)
+    );
+    // находим кнопку формы
+    this._buttonElem = this._formElem.querySelector(this._submitButtonSelector);
   }
 
+  /**
+   * 1) Сбрасывает поля формы до пустого состояния
+   * 2) Убирает отображение ошибок на полях формы (подчеркивание input-a + вывод текста ошибки)
+   */
+  hideErrorsAndReset() {
+    this._formElem.reset();
+    Array.from(
+      this._formElem.querySelectorAll(".popup__error_visible")
+    ).forEach((errorElem) =>
+      errorElem.classList.remove("popup__error_visible")
+    );
+    Array.from(
+      this._formElem.querySelectorAll(".popup__input_type_error")
+    ).forEach((errorElem) =>
+      errorElem.classList.remove("popup__input_type_error")
+    );
+  }
+
+  /**
+   * Для данного input-а
+   * 1) подчеркивает его красным
+   * 2) выводит сообщение с текстом ошибки под ним
+   * @param {HTMLElement} inputElem
+   * @param {string} errorMessage
+   */
   _showInputError(inputElem, errorMessage) {
     const errorElem = this._formElem.querySelector(`.${inputElem.id}-error`);
     inputElem.classList.add(this._inputErrorClass);
@@ -24,7 +56,12 @@ class FormValidator {
     errorElem.textContent = errorMessage;
   }
 
-  // убираем ошибку на самом input-e и убираем сообщение об ошибке под ним
+  /**
+   * Для данного input-а
+   * 1) удалет подчеркивание красным
+   * 2) скрывает сообщение с текстом ошибки под ним
+   * @param {HTMLElement} inputElem
+   */
   _hideInputError(inputElem) {
     const errorElem = this._formElem.querySelector(`.${inputElem.id}-error`);
     inputElem.classList.remove(this._inputErrorClass);
@@ -32,7 +69,10 @@ class FormValidator {
     errorElem.textContent = "";
   }
 
-  // проверяем валидность конкретного input-а и выводим или прячем ошибку на нем и сообщения об ошибку рядом с ним
+  /**
+   * проверяем валидность конкретного input-а и выводим или прячем ошибку на нем (подчеркивание + текст ошибки под ним)
+   * @param {HTMLElement} inputElem
+   */
   _checkInputValidity(inputElem) {
     if (!inputElem.validity.valid) {
       this._showInputError(inputElem, inputElem.validationMessage);
@@ -41,47 +81,50 @@ class FormValidator {
     }
   }
 
-  // проверяем есть ли невалидный input на форме
-  _hasInvalidInput(inputList) {
-    return inputList.some((input) => {
+  /**
+   * проверяем есть ли невалидный input на форме
+   * @returns {boolean} true - если есть невалидные поля, false - невалидные поля отсутствуют
+   */
+  _hasInvalidInput() {
+    return this._inputList.some((input) => {
       return !input.validity.valid;
     });
   }
 
-  // переключаем состояние кнопки в зависимости от валидности всех input-ов её формы
-  // этот метод так же публичный, так как нужно поменять состояние кнопки отправки формы добавления карточки
-  // после успешного создания новой карточки
-  toggleButtonState(inputList, buttonElem) {
-    if (this._hasInvalidInput(inputList)) {
-      buttonElem.classList.add(this._inactiveButtonClass);
-      buttonElem.disabled = true;
+  /**
+   * переключаем состояние кнопки в зависимости от валидности всех input-ов её формы
+   * этот метод так же публичный, так как нужно поменять состояние кнопки отправки формы добавления карточки
+   * после успешного создания новой карточки
+   */
+  toggleButtonState() {
+    if (this._hasInvalidInput()) {
+      this._buttonElem.classList.add(this._inactiveButtonClass);
+      this._buttonElem.disabled = true;
     } else {
-      buttonElem.classList.remove(this._inactiveButtonClass);
-      buttonElem.disabled = false;
+      this._buttonElem.classList.remove(this._inactiveButtonClass);
+      this._buttonElem.disabled = false;
     }
   }
 
+  /**
+   * Для каждого input формы добавляет слушателя события input
+   */
   _addEventListenerToForm() {
-    // отменяем действие по умолчанию
     this._formElem.addEventListener("submit", function (evt) {
       evt.preventDefault();
     });
 
-    // находим все input-ы формы
-    const inputsList = Array.from(
-      this._formElem.querySelectorAll(this._inputSelector)
-    );
-    // находим кнопку формы
-    const buttonElem = this._formElem.querySelector(this._submitButtonSelector);
-    this.toggleButtonState(inputsList, buttonElem);
-    inputsList.forEach((inputElem) => {
+    this.toggleButtonState();
+    this._inputList.forEach((inputElem) => {
       inputElem.addEventListener("input", () => {
         this._checkInputValidity(inputElem);
-        this.toggleButtonState(inputsList, buttonElem);
+        this.toggleButtonState();
       });
     });
   }
-
+  /**
+   * Публичный метода запуска валидации формы
+   */
   enableValidation() {
     this._addEventListenerToForm();
   }
