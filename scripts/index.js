@@ -50,15 +50,18 @@ function openPopup(popup) {
   popup.addEventListener("click", closePopupOnOverlayClick);
 }
 
-// HTMLElement of popup with image
-const popupImage = document.querySelector(".popup_type_show-image");
-const popupCloseButton = popupImage.querySelector(".popup__close");
-popupCloseButton.addEventListener("click", () => {
-  closePopup(popupImage);
-});
+// HTMLElements of popup with image
+const popupWithImageElement = document.querySelector(".popup_type_show-image");
+const popupWithImage = {
+  popup: popupWithImageElement,
+  image: popupWithImageElement.querySelector(".popup__image"),
+  subtitle: popupWithImageElement.querySelector(".popup__subtitle"),
+  closeButton: popupWithImageElement.querySelector(".popup__close"),
+};
 
-const popupImageFotoElement = popupImage.querySelector(".popup__image");
-const popupImageSubtitleElement = popupImage.querySelector(".popup__subtitle");
+popupWithImage.closeButton.addEventListener("click", () => {
+  closePopup(popupWithImage);
+});
 
 /**
  * Создает кароточку Card
@@ -66,13 +69,13 @@ const popupImageSubtitleElement = popupImage.querySelector(".popup__subtitle");
  * @param {string} link
  */
 function createCard(name, link) {
-  // 4ым аргументом передаем callback, который знает про openPopup и popupImage, так что класс Card теперь не должен знать о них
+  // 4ым аргументом передаем callback, который знает про openPopup и popupWithImage, так что класс Card теперь не должен знать о них
   // класс Card сообщит колбэку imgLink - адрес своего изображение и title - свой заголовок
   const card = new Card(name, link, "#card-template", (imgLink, title) => {
-    popupImageFotoElement.src = imgLink;
-    popupImageFotoElement.alt = title;
-    popupImageSubtitleElement.textContent = title;
-    openPopup(popupImage);
+    popupWithImage.image.src = imgLink;
+    popupWithImage.image.alt = title;
+    popupWithImage.subtitle.textContent = title;
+    openPopup(popupWithImage.popup);
   });
   return card.makeCard();
 }
@@ -87,88 +90,98 @@ initialCards.forEach((elem) => {
   renderCard(createCard(elem.name, elem.link));
 });
 
-////////////////////////////////////////////////
-//Form for edit profile info
+/**
+ * Профиль пользователя
+ * 1) кнопка редактирования
+ * 2) имя
+ * 3) профессия
+ * 4) кнопка добавления новой карточки
+ */
 
-const profileEditButton = document.querySelector(".profile__edit-button");
+const profile = {
+  editButton: document.querySelector(".profile__edit-button"),
+  name: document.querySelector(".profile__name"),
+  profession: document.querySelector(".profile__profession"),
+  cardAddButton: document.querySelector(".profile__add-button"),
+};
 
-const profileNameElement = document.querySelector(".profile__name");
-const profileProfessionElement = document.querySelector(".profile__profession");
-
-const popupProfileInfo = document.querySelector(".popup_type_profile-info");
-
-const formProfileInfoInputName = popupProfileInfo.querySelector(
-  ".form-profile-info__input_el_name"
+/**
+ * Попап редактирования профиля
+ */
+const popupProfileInfoElement = document.querySelector(
+  ".popup_type_profile-info"
 );
-const formProfileInfoInputProfession = popupProfileInfo.querySelector(
-  ".form-profile-info__input_el_profession"
-);
+const popupProfileInfo = {
+  popup: popupProfileInfoElement,
+  inputName: popupProfileInfoElement.querySelector(
+    ".form-profile-info__input_el_name"
+  ),
+  inputProfession: popupProfileInfoElement.querySelector(
+    ".form-profile-info__input_el_profession"
+  ),
+  form: popupProfileInfoElement.querySelector(".form-profile-info"),
+  closeButton: popupProfileInfoElement.querySelector(".popup__close"),
+};
 
-const popupAddCard = document.querySelector(".popup_type_add-card");
-
-const formProfileInfo = popupProfileInfo.querySelector(".form-profile-info");
-const formAddCard = popupAddCard.querySelector(".form-add-card");
-
-profileEditButton.addEventListener("click", function () {
+profile.editButton.addEventListener("click", function () {
   profileFormValidator.hideErrorsAndReset();
-  openPopup(popupProfileInfo);
-  formProfileInfoInputName.value = profileNameElement.textContent;
-  formProfileInfoInputProfession.value = profileProfessionElement.textContent;
+  openPopup(popupProfileInfo.popup);
+  popupProfileInfo.inputName.value = profile.name.textContent;
+  popupProfileInfo.inputProfession.value = profile.profession.textContent;
   // генерируем событие input на первом текстовом поле, чтобы форма свалидировалась после открытия, так как
   // изменение textContent не вызывает этого события и форма считает что текстовые поля пустые
   // хотя они заполнены
-  formProfileInfo
+  popupProfileInfo.form
     .querySelector(".popup__input")
     .dispatchEvent(new Event("input"));
 });
 
-const popupProfileInfoCloseButton =
-  popupProfileInfo.querySelector(".popup__close");
-popupProfileInfoCloseButton.addEventListener("click", function () {
-  closePopup(popupProfileInfo);
+popupProfileInfo.closeButton.addEventListener("click", function () {
+  closePopup(popupProfileInfo.popup);
 });
 
-formProfileInfo.addEventListener("submit", function (e) {
+popupProfileInfo.form.addEventListener("submit", function (e) {
   e.preventDefault();
-  profileNameElement.textContent = formProfileInfoInputName.value;
-  profileProfessionElement.textContent = formProfileInfoInputProfession.value;
-  closePopup(popupProfileInfo);
+  profile.name.textContent = popupProfileInfo.inputName.value;
+  profile.profession.textContent = popupProfileInfo.inputProfession.value;
+  closePopup(popupProfileInfo.popup);
 });
 
-////////////////////////////////////////////////
-//Form for add cards
-const cardAddButton = document.querySelector(".profile__add-button");
+/**
+ * Попап добавления новой карточки
+ */
+const popupAddCardElement = document.querySelector(".popup_type_add-card");
+const popupAddCard = {
+  popup: popupAddCardElement,
+  inputTitle: popupAddCardElement.querySelector(
+    ".form-add-card__input_el_title"
+  ),
+  inputImg: popupAddCardElement.querySelector(".form-add-card__input_el_img"),
+  form: popupAddCardElement.querySelector(".form-add-card"),
+  closeButton: popupAddCardElement.querySelector(".popup__close"),
+};
 
-const formAddCardInputTitle = popupAddCard.querySelector(
-  ".form-add-card__input_el_title"
-);
-const formAddCardInputImg = popupAddCard.querySelector(
-  ".form-add-card__input_el_img"
-);
-
-cardAddButton.addEventListener("click", function () {
+profile.cardAddButton.addEventListener("click", function () {
   cardAddFormValidator.hideErrorsAndReset();
-  openPopup(popupAddCard);
+  openPopup(popupAddCard.popup);
 });
 
-const popupAddCardCloseButton = popupAddCard.querySelector(".popup__close");
-popupAddCardCloseButton.addEventListener("click", function () {
-  formAddCard.reset();
-
-  closePopup(popupAddCard);
+popupAddCard.closeButton.addEventListener("click", function () {
+  popupAddCard.form.reset();
+  closePopup(popupAddCard.popup);
 });
 
-formAddCard.addEventListener("submit", function (e) {
+popupAddCard.form.addEventListener("submit", function (e) {
   e.preventDefault();
 
   renderCard(
-    createCard(formAddCardInputTitle.value, formAddCardInputImg.value)
+    createCard(popupAddCard.inputTitle.value, popupAddCard.inputImg.value)
   );
 
-  formAddCard.reset();
+  popupAddCard.form.reset();
   // через готовый, имеющуйся метод валидатора формы делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
   cardAddFormValidator.toggleButtonState();
-  closePopup(popupAddCard);
+  closePopup(popupAddCard.popup);
 });
 
 const formValidatorConfig = {
@@ -181,12 +194,12 @@ const formValidatorConfig = {
 
 const profileFormValidator = new FormValidator(
   formValidatorConfig,
-  document.querySelector(".form-profile-info")
+  popupProfileInfo.form
 );
 profileFormValidator.enableValidation();
 
 const cardAddFormValidator = new FormValidator(
   formValidatorConfig,
-  document.querySelector(".form-add-card")
+  popupAddCard.form
 );
 cardAddFormValidator.enableValidation();
