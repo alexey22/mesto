@@ -4,17 +4,6 @@ import FormValidator from "./FormValidator.js";
 import initialCards from "./initialCards.js";
 
 /**
- * Скрывает ошибки валидации форм ( Убирает подчеркивание красным input-a и вывод сообщения с описанием ошибки),
- * а так же сбрасывает значения текстовых полей формы до пустого состояния:
- * 1) формы добавления новой карточки
- * 2) формы редактирования профиля
- */
-function hideErrorsAndReset() {
-  cardAddFormValidator.hideErrorsAndReset();
-  profileFormValidator.hideErrorsAndReset();
-}
-
-/**
  * Обработчик события
  * при нажатии Esc на document
  * Находит активный popup и закрывает его
@@ -47,7 +36,6 @@ function closePopupOnOverlayClick(evt) {
  */
 const closePopup = (popup) => {
   popup.classList.remove("popup_opened");
-  hideErrorsAndReset();
   document.removeEventListener("keyup", handleEsc);
   popup.removeEventListener("click", closePopupOnOverlayClick);
 };
@@ -73,11 +61,11 @@ const popupImageFotoElement = popupImage.querySelector(".popup__image");
 const popupImageSubtitleElement = popupImage.querySelector(".popup__subtitle");
 
 /**
- * Создает кароточку Card и размещает ее в верстке страницы
+ * Создает кароточку Card
  * @param {string} name
  * @param {string} link
  */
-function createAndRenderCard(name, link) {
+function createCard(name, link) {
   // 4ым аргументом передаем callback, который знает про openPopup и popupImage, так что класс Card теперь не должен знать о них
   // класс Card сообщит колбэку imgLink - адрес своего изображение и title - свой заголовок
   const card = new Card(name, link, "#card-template", (imgLink, title) => {
@@ -86,12 +74,17 @@ function createAndRenderCard(name, link) {
     popupImageSubtitleElement.textContent = title;
     openPopup(popupImage);
   });
-  document.querySelector(".elements").prepend(card.makeCard());
+  return card.makeCard();
+}
+
+const cardsContainer = document.querySelector(".elements");
+function renderCard(cardElement) {
+  cardsContainer.prepend(cardElement);
 }
 
 // Создает первоначальные карточки
 initialCards.forEach((elem) => {
-  createAndRenderCard(elem.name, elem.link);
+  renderCard(createCard(elem.name, elem.link));
 });
 
 ////////////////////////////////////////////////
@@ -117,6 +110,7 @@ const formProfileInfo = popupProfileInfo.querySelector(".form-profile-info");
 const formAddCard = popupAddCard.querySelector(".form-add-card");
 
 profileEditButton.addEventListener("click", function () {
+  profileFormValidator.hideErrorsAndReset();
   openPopup(popupProfileInfo);
   formProfileInfoInputName.value = profileNameElement.textContent;
   formProfileInfoInputProfession.value = profileProfessionElement.textContent;
@@ -153,6 +147,7 @@ const formAddCardInputImg = popupAddCard.querySelector(
 );
 
 cardAddButton.addEventListener("click", function () {
+  cardAddFormValidator.hideErrorsAndReset();
   openPopup(popupAddCard);
 });
 
@@ -166,7 +161,9 @@ popupAddCardCloseButton.addEventListener("click", function () {
 formAddCard.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  createAndRenderCard(formAddCardInputTitle.value, formAddCardInputImg.value);
+  renderCard(
+    createCard(formAddCardInputTitle.value, formAddCardInputImg.value)
+  );
 
   formAddCard.reset();
   // через готовый, имеющуйся метод валидатора формы делаем кнопку сабмита неактивной, так как поля только что были очищены и стали пустыми
