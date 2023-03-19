@@ -3,6 +3,8 @@ import FormValidator from "./FormValidator.js";
 
 import initialCards from "./initialCards.js";
 
+import "../pages/index.css";
+
 /**
  * Обработчик события
  * при нажатии Esc на document
