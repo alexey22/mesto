@@ -47,7 +47,7 @@ class Card {
   }
 
   _openImagePopupHandler() {
-    this._openPopupCallback(this._link, this._name);
+    this._openPopupCallback(this._name, this._link);
   }
 
   _addEventListeners() {

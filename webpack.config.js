@@ -9,12 +9,12 @@ module.exports = {
   },
   output: {
     filename: "main.[hash].js",
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "dist"),
   },
   mode: "development",
   devServer: {
     static: {
-      directory: path.resolve(__dirname, "build"),
+      directory: path.resolve(__dirname, "dist"),
     },
     open: true,
   },
