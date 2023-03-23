@@ -5,7 +5,7 @@ import PopupWithImage from "../components/PopupWithImage.js";
 import PopupWithForm from "../components/PopupWithForm.js";
 import Section from "../components/Section.js";
 
-import initialCards from "../constants/initialCards.js";
+import { initialCards, formValidatorConfig } from "../utils/constants.js";
 
 import "../pages/index.css";
 
@@ -18,6 +18,17 @@ const profileInfoFormInputNameElement = document.querySelector(
 // Профессия профиля
 const profileInfoFormInputProfessionElement = document.querySelector(
   ".form-profile-info__input_el_profession"
+);
+
+//////////////////////////////////////////////////////////
+// Поля формы добавления новой карточки
+// Заголовок
+const cardAddFormInputTitleElement = document.querySelector(
+  ".form-add-card__input_el_title"
+);
+// Фото
+const cardAddFormInputImgElement = document.querySelector(
+  ".form-add-card__input_el_img"
 );
 
 ///////////////////////////////////////////////////////////
@@ -60,27 +71,21 @@ const profile = {
 
 // слушатель кнопки редактирования профиля
 profile.editButton.addEventListener("click", function () {
-  profileFormValidator.hideErrors();
   popupProfileInfo.open();
   const userInfoObj = userInfo.getUserInfo();
-  profileInfoFormInputNameElement.value = userInfoObj.name;
-  profileInfoFormInputProfessionElement.value = userInfoObj.profession;
-  // генерируем событие input на первом текстовом поле,
-  //чтобы форма свалидировалась после открытия, так как
-  // изменение textContent не вызывает этого события
-  //и форма считает что текстовые поля пустые хотя они заполнены
-  document
-    .querySelector(".form-profile-info")
-    .querySelector(".popup__input")
-    .dispatchEvent(new Event("input"));
+  popupProfileInfo.setInputValues({
+    name: userInfoObj.name,
+    profession: userInfoObj.profession,
+  });
+  profileFormValidator.resetValidation();
 });
 
 ////////////////////////////////////////////////////////////
 //Попап добавления новой карточки
 
 profile.cardAddButton.addEventListener("click", function () {
-  cardAddFormValidator.hideErrors();
   popupAddCard.open();
+  cardAddFormValidator.resetValidation();
 });
 
 const popupAddCard = new PopupWithForm(
@@ -89,13 +94,10 @@ const popupAddCard = new PopupWithForm(
   function (evt) {
     evt.preventDefault();
     section.addItem(
-      popupAddCard._getInputValues()[0], //document.querySelector(".form-add-card__input_el_title").value,
-      popupAddCard._getInputValues()[1] //document.querySelector(".form-add-card__input_el_img").value
+      cardAddFormInputTitleElement.value,
+      cardAddFormInputImgElement.value
     );
     popupAddCard.close();
-    // через готовый, имеющийся метод валидатора формы делаем кнопку сабмита неактивной,
-    // так как поля после сабмита были очищены и стали пустыми
-    cardAddFormValidator.toggleButtonState();
   }
 );
 
@@ -131,16 +133,8 @@ const section = new Section(
 );
 section.renderAll();
 
-//////////////////////////////////////////////////////////
-// config and enable validators for 2 instances of FormWithInput
-const formValidatorConfig = {
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
-};
-
+/////////////////////////////////////////////////////////////
+// enable validators for 2 instances of FormWithInput
 const profileFormValidator = new FormValidator(
   formValidatorConfig,
   document.querySelector(".form-profile-info")
