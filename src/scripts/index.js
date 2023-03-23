@@ -49,7 +49,7 @@ const profile = {
 
 // слушатель кнопки редактирования профиля
 profile.editButton.addEventListener("click", function () {
-  //profileFormValidator.hideErrorsAndReset();
+  profileFormValidator.hideErrors();
   popupProfileInfo.open();
   document.querySelector(".form-profile-info__input_el_name").value =
     userInfo.getUserInfo().name;
@@ -69,7 +69,7 @@ profile.editButton.addEventListener("click", function () {
 //Попап добавления новой карточки
 
 profile.cardAddButton.addEventListener("click", function () {
-  cardAddFormValidator.hideErrorsAndReset();
+  cardAddFormValidator.hideErrors();
   popupAddCard.open();
 });
 

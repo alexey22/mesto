@@ -28,18 +28,13 @@ class FormValidator {
    * 1) Сбрасывает поля формы до пустого состояния
    * 2) Убирает отображение ошибок на полях формы (подчеркивание input-a + вывод текста ошибки)
    */
-  hideErrorsAndReset() {
-    this._formElem.reset();
-    Array.from(
-      this._formElem.querySelectorAll(".popup__error_visible")
-    ).forEach((errorElem) =>
-      errorElem.classList.remove("popup__error_visible")
+  hideErrors() {
+    Array.from(this._formElem.querySelectorAll("." + this._errorClass)).forEach(
+      (errorElem) => errorElem.classList.remove(this._errorClass)
     );
     Array.from(
-      this._formElem.querySelectorAll(".popup__input_type_error")
-    ).forEach((errorElem) =>
-      errorElem.classList.remove("popup__input_type_error")
-    );
+      this._formElem.querySelectorAll("." + this._inputErrorClass)
+    ).forEach((errorElem) => errorElem.classList.remove(this._inputErrorClass));
   }
 
   /**
