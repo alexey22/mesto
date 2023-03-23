@@ -1,13 +1,24 @@
-import Card from "./Card.js";
-import FormValidator from "./FormValidator.js";
-import UserInfo from "./UserInfo.js";
-import PopupWithImage from "./PopupWithImage.js";
-import PopupWithForm from "./PopupWithForm.js";
-import Section from "./Section.js";
+import Card from "../components/Card.js";
+import FormValidator from "../components/FormValidator.js";
+import UserInfo from "../components/UserInfo.js";
+import PopupWithImage from "../components/PopupWithImage.js";
+import PopupWithForm from "../components/PopupWithForm.js";
+import Section from "../components/Section.js";
 
-import initialCards from "./initialCards.js";
+import initialCards from "../constants/initialCards.js";
 
 import "../pages/index.css";
+
+///////////////////////////////////////////////////////////
+// Поля формы редактрирования профиля пользователя
+// Имя профиля
+const profileInfoFormInputNameElement = document.querySelector(
+  ".form-profile-info__input_el_name"
+);
+// Профессия профиля
+const profileInfoFormInputProfessionElement = document.querySelector(
+  ".form-profile-info__input_el_profession"
+);
 
 ///////////////////////////////////////////////////////////
 // Информация о пользователе
@@ -29,8 +40,8 @@ const popupProfileInfo = new PopupWithForm(
   function (evt) {
     evt.preventDefault();
     userInfo.setUserInfo({
-      name: popupProfileInfo._getInputValues()[0], //document.querySelector(".form-profile-info__input_el_name").value,
-      profession: popupProfileInfo._getInputValues()[1], //document.querySelector(".form-profile-info__input_el_profession").value,
+      name: profileInfoFormInputNameElement.value,
+      profession: profileInfoFormInputProfessionElement.value,
     });
     popupProfileInfo.close();
   }
@@ -51,10 +62,9 @@ const profile = {
 profile.editButton.addEventListener("click", function () {
   profileFormValidator.hideErrors();
   popupProfileInfo.open();
-  document.querySelector(".form-profile-info__input_el_name").value =
-    userInfo.getUserInfo().name;
-  document.querySelector(".form-profile-info__input_el_profession").value =
-    userInfo.getUserInfo().profession;
+  const userInfoObj = userInfo.getUserInfo();
+  profileInfoFormInputNameElement.value = userInfoObj.name;
+  profileInfoFormInputProfessionElement.value = userInfoObj.profession;
   // генерируем событие input на первом текстовом поле,
   //чтобы форма свалидировалась после открытия, так как
   // изменение textContent не вызывает этого события
