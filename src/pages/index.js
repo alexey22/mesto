@@ -48,11 +48,11 @@ userInfo.setUserInfo({
 const popupProfileInfo = new PopupWithForm(
   ".popup_type_profile-info",
   // колбэк при сабмите формы
-  function (evt) {
+  function (evt, inputValues) {
     evt.preventDefault();
     userInfo.setUserInfo({
-      name: profileInfoFormInputNameElement.value,
-      profession: profileInfoFormInputProfessionElement.value,
+      name: inputValues["name"],
+      profession: inputValues["profession"],
     });
     popupProfileInfo.close();
   }
@@ -91,12 +91,9 @@ profile.cardAddButton.addEventListener("click", function () {
 const popupAddCard = new PopupWithForm(
   ".popup_type_add-card",
   // колбэк при отправке формы
-  function (evt) {
+  function (evt, inputValues) {
     evt.preventDefault();
-    section.addItem(
-      cardAddFormInputTitleElement.value,
-      cardAddFormInputImgElement.value
-    );
+    section.addItem(inputValues["title"], inputValues["img"]);
     popupAddCard.close();
   }
 );
