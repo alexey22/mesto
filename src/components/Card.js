@@ -5,11 +5,29 @@ class Card {
    * @param {string} templateSelector
    * @param {function} openPopupCallback
    */
-  constructor(name, link, templateSelector, openPopupCallback) {
+  constructor({
+    name,
+    link,
+    likes,
+    _id,
+    ownerId,
+    userId,
+    templateSelector,
+    openPopupCallback,
+    api,
+    popupDeleteCard,
+  }) {
     this._name = name;
     this._link = link;
+    this._likes = likes;
+    this._id = _id;
+    this._ownerId = ownerId;
+    this._userId = userId;
     this._templateSelector = templateSelector;
     this._openPopupCallback = openPopupCallback;
+    this._api = api;
+    this._popupDeleteCard = popupDeleteCard;
+    this._isMyCard = this._ownerId === this._userId;
   }
 
   /**
@@ -24,28 +42,72 @@ class Card {
     this._imageElement = this._element.querySelector(".card__image");
     this._imageElement.src = this._link;
     this._imageElement.alt = this._name;
-    this._likeElement = this._element.querySelector(".card__like");
     this._titleElement = this._element.querySelector(".card__title");
     this._titleElement.textContent = this._name;
+    this._likeElement = this._element.querySelector(".card__like");
+    this._likeCounterElement = this._element.querySelector(
+      ".card__like-counter"
+    );
+    this._likeCounterElement.textContent = this._likes.length;
     this._deleteElement = this._element.querySelector(".card__delete");
+    if (this._isMyCard) {
+      this._deleteCardHandler = this._deleteCardHandler.bind(this);
+    } else {
+      this._deleteElement.remove();
+    }
 
-    this._deleteCardHandler = this._deleteCardHandler.bind(this);
     this._likeCardHandler = this._likeCardHandler.bind(this);
     this._openImagePopupHandler = this._openImagePopupHandler.bind(this);
 
     this._addEventListeners();
 
+    if (
+      this._likes.some((like) => {
+        return like._id === this._userId;
+      })
+    ) {
+      this._likeElement.classList.add("card__like_liked");
+    }
+
     return this._element;
   }
 
   _deleteCardHandler() {
-    this._removeEventListeners();
-    this._element.remove();
-    delete this;
+    this._popupDeleteCard.open((evt) => {
+      // formSubmitHandler
+      evt.preventDefault();
+      this._api
+        .deleteCard(this._id)
+        .then((res) => {
+          this._removeEventListeners();
+          this._element.remove();
+          //delete this;
+        })
+        .catch((err) => alert(err))
+        .finally(() => this._popupDeleteCard.close());
+    });
   }
 
   _likeCardHandler() {
-    this._likeElement.classList.toggle("card__like_liked");
+    if (this._likeElement.classList.contains("card__like_liked")) {
+      this._api
+        .deleteLike(this._id)
+        .then((card) => {
+          this._likeElement.classList.remove("card__like_liked");
+          this._likes = card.likes;
+          this._likeCounterElement.textContent = card.likes.length;
+        })
+        .catch((err) => alert(err));
+    } else {
+      this._api
+        .addLike(this._id)
+        .then((card) => {
+          this._likeElement.classList.add("card__like_liked");
+          this._likes = card.likes;
+          this._likeCounterElement.textContent = card.likes.length;
+        })
+        .catch((err) => alert(err));
+    }
   }
 
   _openImagePopupHandler() {
@@ -54,7 +116,8 @@ class Card {
 
   _addEventListeners() {
     //add event for card delete
-    this._deleteElement.addEventListener("click", this._deleteCardHandler);
+    if (this._isMyCard)
+      this._deleteElement.addEventListener("click", this._deleteCardHandler);
 
     //add event for card like
     this._likeElement.addEventListener("click", this._likeCardHandler);
@@ -65,7 +128,8 @@ class Card {
 
   _removeEventListeners() {
     //remove event for card delete
-    this._deleteElement.removeEventListener("click", this._deleteCardHandler);
+    if (this._isMyCard)
+      this._deleteElement.removeEventListener("click", this._deleteCardHandler);
 
     //remove event for card like
     this._likeElement.removeEventListener("click", this._likeCardHandler);

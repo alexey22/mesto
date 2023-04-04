@@ -35,4 +35,8 @@ export default class PopupWithForm extends Popup {
       input.value = data[input.name];
     });
   }
+
+  setButtonTitle(title) {
+    this._submitButtonElement.textContent = title;
+  }
 }

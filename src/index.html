@@ -19,11 +19,9 @@
     <main>
       <section class="profile">
         <div class="profile__user">
-          <img
-            src="<%=require('./images/Avatar.jpg')%>"
-            alt="Аватар"
-            class="profile__avatar"
-          />
+          <div class="profile__avatar-container">
+            <img src="#" alt="Аватар" class="profile__avatar" />
+          </div>
           <div class="profile__info">
             <div class="profile__name-and-edit-button">
               <h1 class="profile__name"></h1>
@@ -37,6 +35,34 @@
       </section>
 
       <section class="elements"></section>
+
+      <section class="popup popup_type_edit-avatar">
+        <div class="popup__container">
+          <form
+            class="popup__form form-edit-avatar"
+            name="edit-avatar"
+            novalidate
+          >
+            <h2 class="form-edit-avatar__title">Обновит аватар</h2>
+            <input
+              class="popup__input form-edit-avatar__input"
+              name="avatar"
+              placeholder="Ссылка на картинку"
+              type="url"
+              required
+            />
+            <p class="popup__error avatar-error"></p>
+            <button
+              class="popup__button form-edit-avatar__submit-button"
+              type="submit"
+            >
+              Сохранить
+            </button>
+          </form>
+
+          <button type="button" class="popup__close"></button>
+        </div>
+      </section>
 
       <section class="popup popup_type_profile-info">
         <div class="popup__container">
@@ -119,6 +145,25 @@
           <button type="button" class="popup__close"></button>
         </div>
       </section>
+
+      <section class="popup popup_type_delete-card">
+        <div class="popup__container">
+          <form
+            class="popup__form form-delete-card"
+            name="delete-card"
+            novalidate
+          >
+            <h2 class="form-delete-card__title">Вы уверены?</h2>
+            <button
+              class="popup__button form-delete-card__submit-button"
+              type="submit"
+            >
+              Да
+            </button>
+          </form>
+          <button type="button" class="popup__close"></button>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
@@ -131,7 +176,10 @@
         <button type="button" class="card__delete"></button>
         <div class="card__info">
           <h2 class="card__title"></h2>
-          <button type="button" class="card__like"></button>
+          <div class="card__like-container">
+            <button type="button" class="card__like"></button>
+            <p class="card__like-counter"></p>
+          </div>
         </div>
       </article>
     </template>
