@@ -21,6 +21,16 @@ const api = new Api({
   },
 });
 
+///////////////////////////////////////////////////////////////////
+// Попап с изображением
+const popupWithImage = new PopupWithImage(".popup_type_show-image");
+popupWithImage.setEventListeners();
+
+////////////////////////////////////////////////////////////////////
+// Попап удаления карточки
+const popupDeleteCard = new PopupDeleteCard(".popup_type_delete-card");
+popupDeleteCard.setEventListeners();
+
 ///////////////////////////////////////////////////////////
 // Информация о пользователе
 const userInfo = new UserInfo({
@@ -29,6 +39,8 @@ const userInfo = new UserInfo({
   avatarSelector: ".profile__avatar",
 });
 
+//////
+//получаем информацию о пользователе
 api
   .getUserInfo()
   .then((user) => {
@@ -36,8 +48,85 @@ api
       name: user.name,
       profession: user.about,
       avatar: user.avatar,
-      _id: user.id,
+      _id: user._id,
     });
+    ///после того, как получили информацию о пользователе, запрашиваем карточки
+    //////////////////////////////////////////////////////////
+    /**
+     * Создает кароточку Card
+     * @param {string} name
+     * @param {string} link
+     */
+    function createCard({
+      name,
+      link,
+      likes,
+      _id,
+      ownerId,
+      userId,
+      api,
+      popupDeleteCard,
+    }) {
+      const card = new Card({
+        name,
+        link,
+        likes,
+        _id,
+        ownerId,
+        userId,
+        templateSelector: "#card-template",
+        openPopupCallback: popupWithImage.open,
+        api,
+        popupDeleteCard,
+      });
+      return card.makeCard();
+    }
+    function renderCard(cardElement, cardsContainer) {
+      cardsContainer.prepend(cardElement);
+    }
+
+    let section = {};
+    api
+      .getInitialCards()
+      .then((initialCards) => {
+        section = new Section(
+          {
+            items: initialCards,
+            renderer: ({
+              name,
+              link,
+              likes,
+              _id,
+              ownerId,
+              userId,
+              containerElement,
+              api,
+              popupDeleteCard,
+            }) => {
+              renderCard(
+                createCard({
+                  name,
+                  link,
+                  likes,
+                  _id,
+                  ownerId,
+                  userId,
+                  api,
+                  popupDeleteCard,
+                }),
+                containerElement
+              );
+            },
+          },
+          ".elements",
+          api,
+          userInfo.getUserId(),
+          //"0d51970006734508dafc5667",
+          popupDeleteCard
+        );
+        section.renderAll();
+      })
+      .catch((err) => alert(err));
   })
   .catch((err) => alert(err));
 
@@ -147,93 +236,6 @@ const popupAddCard = new PopupWithForm(
 );
 
 popupAddCard.setEventListeners();
-
-///////////////////////////////////////////////////////////////////
-// Попап с изображением
-const popupWithImage = new PopupWithImage(".popup_type_show-image");
-popupWithImage.setEventListeners();
-
-////////////////////////////////////////////////////////////////////
-// Попап удаления карточки
-const popupDeleteCard = new PopupDeleteCard(".popup_type_delete-card");
-popupDeleteCard.setEventListeners();
-
-//////////////////////////////////////////////////////////
-/**
- * Создает кароточку Card
- * @param {string} name
- * @param {string} link
- */
-function createCard({
-  name,
-  link,
-  likes,
-  _id,
-  ownerId,
-  userId,
-  api,
-  popupDeleteCard,
-}) {
-  const card = new Card({
-    name,
-    link,
-    likes,
-    _id,
-    ownerId,
-    userId,
-    templateSelector: "#card-template",
-    openPopupCallback: popupWithImage.open,
-    api,
-    popupDeleteCard,
-  });
-  return card.makeCard();
-}
-function renderCard(cardElement, cardsContainer) {
-  cardsContainer.prepend(cardElement);
-}
-
-let section = {};
-api
-  .getInitialCards()
-  .then((initialCards) => {
-    section = new Section(
-      {
-        items: initialCards,
-        renderer: ({
-          name,
-          link,
-          likes,
-          _id,
-          ownerId,
-          userId,
-          containerElement,
-          api,
-          popupDeleteCard,
-        }) => {
-          renderCard(
-            createCard({
-              name,
-              link,
-              likes,
-              _id,
-              ownerId,
-              userId,
-              api,
-              popupDeleteCard,
-            }),
-            containerElement
-          );
-        },
-      },
-      ".elements",
-      api,
-      //userInfo.getUserId(),
-      "0d51970006734508dafc5667",
-      popupDeleteCard
-    );
-    section.renderAll();
-  })
-  .catch((err) => alert(err));
 
 /////////////////////////////////////////////////////////////
 // enable validators for 3 instances of FormWithInput
