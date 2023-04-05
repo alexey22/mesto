@@ -41,6 +41,8 @@ const userInfo = new UserInfo({
 
 //////
 //получаем информацию о пользователе
+let section = {};
+
 api
   .getUserInfo()
   .then((user) => {
@@ -85,7 +87,6 @@ api
       cardsContainer.prepend(cardElement);
     }
 
-    let section = {};
     api
       .getInitialCards()
       .then((initialCards) => {
