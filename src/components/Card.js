@@ -14,8 +14,8 @@ class Card {
     userId,
     templateSelector,
     openPopupCallback,
-    api,
-    popupDeleteCard,
+    api, // сюда передан объект с коллбекам, а не сам класс (имя поля объекта совпадает с названием метода класса)
+    popupDeleteCard, // сюда передан объект с коллбекам, а не сам класс (имя поля объекта совпадает с названием метода класса)
   }) {
     this._name = name;
     this._link = link;
@@ -25,8 +25,8 @@ class Card {
     this._userId = userId;
     this._templateSelector = templateSelector;
     this._openPopupCallback = openPopupCallback;
-    this._api = api;
-    this._popupDeleteCard = popupDeleteCard;
+    this._api = api; // сюда передан объект с коллбекам, а не сам класс (имя поля объекта совпадает с названием метода класса)
+    this._popupDeleteCard = popupDeleteCard; // сюда передан объект с коллбекам, а не сам класс (имя поля объекта совпадает с названием метода класса)
     this._isMyCard = this._ownerId === this._userId;
   }
 
@@ -81,10 +81,10 @@ class Card {
         .then((res) => {
           this._removeEventListeners();
           this._element.remove();
+          () => this._popupDeleteCard.close();
           //delete this;
         })
-        .catch((err) => alert(err))
-        .finally(() => this._popupDeleteCard.close());
+        .catch((err) => alert(err));
     });
   }
 

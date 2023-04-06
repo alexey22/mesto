@@ -83,9 +83,6 @@ api
       });
       return card.makeCard();
     }
-    function renderCard(cardElement, cardsContainer) {
-      cardsContainer.prepend(cardElement);
-    }
 
     api
       .getInitialCards()
@@ -101,29 +98,34 @@ api
               ownerId,
               userId,
               containerElement,
-              api,
-              popupDeleteCard,
+              api, // Передаем объект с коллбеками, а не сам класс (см.ниже)
+              popupDeleteCard, // Передаем объек с коллбеками, а не сам класс (см.ниже)
             }) => {
-              renderCard(
-                createCard({
-                  name,
-                  link,
-                  likes,
-                  _id,
-                  ownerId,
-                  userId,
-                  api,
-                  popupDeleteCard,
-                }),
-                containerElement
-              );
+              return createCard({
+                name,
+                link,
+                likes,
+                _id,
+                ownerId,
+                userId,
+                api, // Передаем объект с коллбеками, а не сам класс (см.ниже)
+                popupDeleteCard, // Передаем объект с коллбеками, а не сам класс (см.ниже)
+              });
             },
           },
           ".elements",
-          api,
+          // Передаем объек с коллбеками, а не сам класс (вот тут передаем)
+          {
+            deleteCard: (...args) => api.deleteCard(...args),
+            addLike: (...args) => api.addLike(...args),
+            deleteLike: (...args) => api.deleteLike(...args),
+          },
           userInfo.getUserId(),
-          //"0d51970006734508dafc5667",
-          popupDeleteCard
+          // Передаем объек с коллбеками, а не сам класс (вот тут передаем)
+          {
+            open: (...args) => popupDeleteCard.open(...args),
+            close: (...args) => popupDeleteCard.close(...args),
+          }
         );
         section.renderAll();
       })
@@ -144,10 +146,10 @@ const popupEditAvatar = new PopupWithForm(
       .setUserAvatar(inputValues["avatar"])
       .then((avatar) => {
         userInfo.setUserAvatar(avatar.avatar);
+        popupEditAvatar.close();
       })
       .catch((err) => alert(err))
       .finally(() => {
-        popupEditAvatar.close();
         popupEditAvatar.setButtonTitle("Сохранить");
       });
   }
@@ -178,10 +180,10 @@ const popupProfileInfo = new PopupWithForm(
           name: user.name,
           profession: user.about,
         });
+        popupProfileInfo.close();
       })
       .catch((err) => alert(err))
       .finally(() => {
-        popupProfileInfo.close();
         popupProfileInfo.setButtonTitle("Сохранить");
       });
   }
@@ -227,10 +229,10 @@ const popupAddCard = new PopupWithForm(
       .addCard(inputValues["title"], inputValues["img"])
       .then((card) => {
         section.addItem(card.name, card.link, card.likes, card._id);
+        popupAddCard.close();
       })
       .catch((err) => alert(err))
       .finally(() => {
-        popupAddCard.close();
         popupAddCard.setButtonTitle("Сохранить");
       });
   }
@@ -257,25 +259,3 @@ const editAvatarFormValidator = new FormValidator(
   document.querySelector(".form-edit-avatar")
 );
 editAvatarFormValidator.enableValidation();
-
-///////////////////////////////////////////////////////////
-// // Поля формы редактрирования профиля пользователя
-// // Имя профиля
-// const profileInfoFormInputNameElement = document.querySelector(
-//   ".form-profile-info__input_el_name"
-// );
-// // Профессия профиля
-// const profileInfoFormInputProfessionElement = document.querySelector(
-//   ".form-profile-info__input_el_profession"
-// );
-
-// //////////////////////////////////////////////////////////
-// // Поля формы добавления новой карточки
-// // Заголовок
-// const cardAddFormInputTitleElement = document.querySelector(
-//   ".form-add-card__input_el_title"
-// );
-// // Фото
-// const cardAddFormInputImgElement = document.querySelector(
-//   ".form-add-card__input_el_img"
-// );
