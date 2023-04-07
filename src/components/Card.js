@@ -81,7 +81,7 @@ class Card {
         .then((res) => {
           this._removeEventListeners();
           this._element.remove();
-          () => this._popupDeleteCard.close();
+          this._popupDeleteCard.close();
           //delete this;
         })
         .catch((err) => alert(err));
